@@ -1,104 +1,107 @@
-Real-Time Performance Dashboard: SSE vs WebSocket 📊
-Server-Sent Events (SSE) vs WebSocket Performance Demo là một dự án minh họa thực tế nhằm so sánh hiệu suất và hành vi của hai công nghệ giao tiếp thời gian thực phổ biến: Server-Sent Events (SSE) và WebSocket. Dự án sử dụng Node.js (Express + ws) ở Backend và một bảng điều khiển (dashboard) thời gian thực ở Frontend để trực quan hóa dữ liệu và số liệu độ trễ.
+# Real-Time Performance Dashboard: SSE vs WebSocket 📊
 
-🌟 Tính Năng Chính
-So Sánh Hiệu Suất Trực Tiếp: Hiển thị độ trễ trung bình (Latency) và thông lượng (Throughput) của SSE và WebSocket trên biểu đồ thời gian thực.
+**Server-Sent Events (SSE) vs WebSocket Performance Demo** là một dự án minh họa thực tế nhằm so sánh hiệu suất và hành vi của hai công nghệ giao tiếp thời gian thực phổ biến: **Server-Sent Events (SSE)** và **WebSocket**.  
 
-Xử Lý Kết Nối Mạnh Mẽ: Minh họa cơ chế tự động kết nối lại (auto-reconnect) tích hợp của SSE so với yêu cầu kết nối lại thủ công của WebSocket.
+Dự án sử dụng **Node.js (Express + ws)** cho backend và một **real-time dashboard** ở frontend để trực quan hóa dữ liệu & độ trễ.
 
-Giao Tiếp Hai Chiều: Hỗ trợ tính năng echo (gửi - nhận) độc quyền của WebSocket để kiểm tra giao tiếp hai chiều.
+---
 
-Simulate Mạng: Kiểm tra hành vi kết nối khi mô phỏng mạng bị ngắt (Offline/Online).
+## 🌟 Tính Năng Chính
+- **So Sánh Hiệu Suất Trực Tiếp**: Biểu đồ latency (ms) và throughput theo thời gian.  
+- **Xử Lý Kết Nối Mạnh Mẽ**: SSE có auto-reconnect, WS cần reconnect thủ công.  
+- **Giao Tiếp Hai Chiều**: WebSocket hỗ trợ tính năng echo (send ↔ receive).  
+- **Mô Phỏng Mạng**: Test hành vi Offline/Online.  
+- **Thống Kê Server**: API theo dõi số client, uptime, số tin nhắn.  
 
-Thống Kê Server: Cung cấp API để truy vấn số liệu thống kê máy chủ theo thời gian thực (số client, số tin nhắn đã gửi, thời gian hoạt động).
+---
 
-🛠️ Ngăn Xếp Công Nghệ (Tech Stack)
-Thành Phần	Công Nghệ	Ghi Chú
-Backend	Node.js (16+), Express	Khung sườn máy chủ HTTP.
-ws	Thư viện WebSocket hiệu suất cao.
-Frontend	HTML, JavaScript (EventSource, WebSocket)	Bảng điều khiển và logic kết nối.
-Testing	performance-test.js	Kịch bản stress test hiệu suất.
+## 🛠️ Ngăn Xếp Công Nghệ
+| Thành phần | Công nghệ | Ghi chú |
+|------------|-----------|---------|
+| Backend    | Node.js (16+), Express | HTTP Server |
+|            | ws | Thư viện WebSocket hiệu suất cao |
+| Frontend   | HTML, JavaScript | Dashboard + logic kết nối (EventSource, WebSocket) |
+| Testing    | performance-test.js | Script stress test |
 
-Xuất sang Trang tính
-🚀 Bắt Đầu Nhanh
-Yêu Cầu
-Node.js phiên bản 16 trở lên
+---
 
-npm
+## 🚀 Bắt Đầu Nhanh
 
-1. Cài Đặt
-Clone kho lưu trữ và cài đặt các gói phụ thuộc:
+### Yêu Cầu
+- Node.js **>= 16**
+- npm
 
-Bash
-
+### 1. Cài đặt
+```bash
 git clone <repository_url> ws_sse_v2
 cd ws_sse_v2/server
 npm install
-2. Chạy Server
-Sử dụng lệnh start hoặc dev (với nodemon để tự động khởi động lại):
-
-Bash
-
-# Chạy trong môi trường Sản xuất
+2. Chạy server
+bash
+Sao chép mã
+# Production
 npm run start 
 
-# Hoặc Chạy trong môi trường Phát triển
-npm run dev 
-3. Mở Dashboard
-Truy cập URL sau trên trình duyệt của bạn:
+# Development (với nodemon)
+npm run dev
+3. Mở dashboard
+Truy cập: http://localhost:3000
 
-http://localhost:3000
-💻 Hướng Dẫn Sử Dụng & Kiểm Thử
-Sau khi truy cập Dashboard, bạn có thể thực hiện các bước sau để so sánh hai giao thức:
+💻 Hướng Dẫn Sử Dụng
+Kết nối: Bấm Connect SSE và Connect WebSocket.
 
-Thiết Lập Kết Nối: Bấm "Connect SSE" và "Connect WebSocket". Quan sát dữ liệu bắt đầu truyền trên Biểu đồ và Log tin nhắn.
+So sánh latency: Quan sát biểu đồ Latency (ms).
 
-Kiểm Thử Độ Trễ: Quan sát đường biểu đồ Latency (ms). WebSocket luôn được kỳ vọng có độ trễ thấp hơn (thường dưới 5ms) so với SSE (thường trên 5ms) do overhead giao thức thấp hơn.
+WebSocket thường <5ms.
 
-Kiểm Thử Khả Năng Tự Phục Hồi (Auto-Reconnect):
+SSE thường >5ms do overhead.
 
-Mở DevTools (F12) → Tab Network → Chọn Offline/Online.
+Auto-reconnect:
 
-SSE: Khi Offline, trạng thái chuyển sang "Lỗi kết nối" và tự động thử kết nối lại sau 3 giây (do retry: 3000) khi chuyển sang Online.
+SSE: Tự động reconnect sau 3s khi Online trở lại.
 
-WebSocket: Khi Offline, trạng thái chuyển sang "Đã ngắt kết nối" và cần bấm lại nút "Kết nối WebSocket" để phục hồi.
+WS: Cần click reconnect.
 
-Kiểm Thử Broadcast: Sử dụng ô "Phát sóng" để gửi tin nhắn từ Server tới tất cả các client (SSE và WS).
+Broadcast: Gửi tin nhắn từ server đến mọi client.
 
-Kiểm Thử Giao Tiếp Hai Chiều (Chỉ WS): Sử dụng ô nhập liệu trong Panel WebSocket để gửi tin nhắn lên Server (Server sẽ echo lại tin nhắn đó).
+Echo (chỉ WS): Gửi tin nhắn từ client, server echo trả về.
 
-⚙️ Chạy Benchmark Tự Động
-Để đo lường hiệu suất trong môi trường không bị ảnh hưởng bởi trình duyệt, hãy chạy kịch bản kiểm thử hiệu suất bằng Node.js:
-
-Bash
-
+⚙️ Benchmark Tự Động
+bash
+Sao chép mã
 cd server
 npm run test
-Kết quả sẽ in ra số liệu latency (p95, p99) và throughput của cả hai giao thức.
+Kết quả sẽ in ra:
+
+Latency: p95, p99
+
+Throughput
 
 📂 Cấu Trúc Dự Án
+bash
+Sao chép mã
 ws-sse-v2/
 ├── client/
-│   ├── dashboard.js      # Logic phía máy khách: quản lý EventSource, WebSocket, tính toán độ trễ
-│   ├── index.html        # Giao diện dashboard
-│   └── style.css         # CSS cho giao diện
+│   ├── dashboard.js        # Logic SSE/WS + tính latency
+│   ├── index.html          # Dashboard UI
+│   └── style.css           # CSS
 ├── server/
-│   ├── server.js         # Logic máy chủ: quản lý endpoints, tạo dữ liệu mô phỏng, broadcast
-│   ├── performance-test.js # Kịch bản kiểm thử hiệu suất tự động (benchmark)
+│   ├── server.js           # Endpoint SSE, WS + broadcast
+│   ├── performance-test.js # Benchmark script
 │   └── package.json
 └── README.md
-📝 Lưu Ý Kỹ Thuật Quan Trọng
-SSE Resilience: Sự mạnh mẽ của SSE đến từ hai yếu tố: header Content-Type: text/event-stream và hai trường tiêu chuẩn là retry: (thiết lập thời gian chờ reconnect) và id: (giúp client resume luồng dữ liệu chính xác).
+📝 Lưu Ý Kỹ Thuật
+SSE Resilience: Dùng Content-Type: text/event-stream, field retry: và id: để resume stream.
 
-WebSocket Overhead: WebSocket đạt độ trễ thấp vì sau quá trình bắt tay HTTP, nó chuyển sang giao thức riêng, truyền dữ liệu bằng các frame nhỏ (minimal overhead), giữ kết nối TCP mở liên tục.
+WebSocket Overhead: WS dùng TCP persistent + frame nhỏ → latency thấp.
 
-Proxy Buffering: Khi triển khai SSE trong môi trường production, cần đảm bảo các proxy (như Nginx) đã tắt tính năng buffering (ví dụ: X-Accel-Buffering: no) để tránh dữ liệu bị giữ lại và gửi đi theo lô (batch), làm mất tính thời gian thực.
+Proxy Buffering: Tắt buffering (VD: X-Accel-Buffering: no trong Nginx) khi dùng SSE.
 
 🤝 Đóng Góp
-Mọi đóng góp (Pull Requests) hoặc báo cáo lỗi (Issues) đều được hoan nghênh.
+PRs và Issues đều được hoan nghênh 🎉.
 
 📧 Liên Hệ
-Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ: haicalisthenic132@gmail.com
+Email: haicalisthenic132@gmail.com
 
 📜 Giấy Phép
-Dự án này được cấp phép theo MIT License.
+Dự án phát hành dưới giấy phép MIT License.
