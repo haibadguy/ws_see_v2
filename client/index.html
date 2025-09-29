@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Hiệu Suất SSE vs WebSocket</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🔬 So Sánh Hiệu Suất SSE vs WebSocket</h1>
+            <p class="subtitle">Phân tích giao thức truyền thông thời gian thực cho mạng máy tính</p>
+        </header>
+
+        <div class="stats-overview">
+            <div class="stat-card">
+                <h3>📡 Client SSE</h3>
+                <div class="stat-value" id="sse-clients">0</div>
+                <div class="stat-label">Kết nối đang hoạt động</div>
+            </div>
+            <div class="stat-card">
+                <h3>🔌 Client WebSocket</h3>
+                <div class="stat-value" id="websocket-clients">0</div>
+                <div class="stat-label">Kết nối đang hoạt động</div>
+            </div>
+            <div class="stat-card">
+                <h3>📨 Tổng tin nhắn</h3>
+                <div class="stat-value" id="total-messages">0</div>
+                <div class="stat-label">Tin nhắn đã gửi</div>
+            </div>
+            <div class="stat-card">
+                <h3>⏱️ Thời gian hoạt động</h3>
+                <div class="stat-value" id="uptime">0s</div>
+                <div class="stat-label">Server đang chạy</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="connect-all" class="btn btn-primary">Kết nối tất cả giao thức</button>
+            <button id="disconnect-all" class="btn btn-secondary">Ngắt kết nối tất cả</button>
+            <button id="clear-data" class="btn btn-warning">Xóa dữ liệu</button>
+            <div class="broadcast-control">
+                <input type="text" id="broadcast-message" placeholder="Nhập tin nhắn phát sóng..." class="input-field">
+                <button id="broadcast-btn" class="btn btn-info">Phát sóng</button>
+            </div>
+        </div>
+
+        <div class="comparison-grid">
+            <!-- SSE Panel -->
+            <div class="protocol-panel sse-panel">
+                <div class="panel-header">
+                    <h2>📡 Server-Sent Events (SSE)</h2>
+                    <div class="connection-status">
+                        <span class="status-dot" id="sse-status-dot"></span>
+                        <span id="sse-status">Chưa kết nối</span>
+                    </div>
+                </div>
+                
+                <div class="panel-controls">
+                    <button id="sse-connect" class="btn btn-success">Kết nối SSE</button>
+                    <button id="sse-disconnect" class="btn btn-danger" disabled>Ngắt kết nối</button>
+                </div>
+
+                <div class="protocol-stats">
+                    <div class="metric">
+                        <span class="metric-label">Tin nhắn nhận được:</span>
+                        <span class="metric-value" id="sse-message-count">0</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Độ trễ trung bình:</span>
+                        <span class="metric-value" id="sse-avg-latency">0ms</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Tin nhắn cuối:</span>
+                        <span class="metric-value" id="sse-last-message">-</span>
+                    </div>
+                </div>
+
+                <div class="message-log">
+                    <h4>Nhật ký tin nhắn (10 tin cuối):</h4>
+                    <div id="sse-messages" class="log-container"></div>
+                </div>
+            </div>
+
+            <!-- WebSocket Panel -->
+            <div class="protocol-panel websocket-panel">
+                <div class="panel-header">
+                    <h2>🔌 WebSocket</h2>
+                    <div class="connection-status">
+                        <span class="status-dot" id="websocket-status-dot"></span>
+                        <span id="websocket-status">Chưa kết nối</span>
+                    </div>
+                </div>
+                
+                <div class="panel-controls">
+                    <button id="websocket-connect" class="btn btn-success">Kết nối WebSocket</button>
+                    <button id="websocket-disconnect" class="btn btn-danger" disabled>Ngắt kết nối</button>
+                </div>
+
+                <div class="protocol-stats">
+                    <div class="metric">
+                        <span class="metric-label">Tin nhắn nhận được:</span>
+                        <span class="metric-value" id="websocket-message-count">0</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Độ trễ trung bình:</span>
+                        <span class="metric-value" id="websocket-avg-latency">0ms</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Tin nhắn cuối:</span>
+                        <span class="metric-value" id="websocket-last-message">-</span>
+                    </div>
+                </div>
+
+                <div class="message-input">
+                    <input type="text" id="websocket-input" placeholder="Nhập tin nhắn để gửi qua WebSocket..." class="input-field">
+                    <button id="websocket-send" class="btn btn-info" disabled>Gửi</button>
+                </div>
+
+                <div class="message-log">
+                    <h4>Nhật ký tin nhắn (10 tin cuối):</h4>
+                    <div id="websocket-messages" class="log-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Charts -->
+        <div class="charts-section">
+            <h2>📊 Chỉ số hiệu suất</h2>
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h4>So sánh độ trễ (ms)</h4>
+                    <canvas id="latencyChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h4>Tin nhắn nhận được</h4>
+                    <canvas id="throughputChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h4>Mô phỏng độ trễ mạng</h4>
+                    <canvas id="networkChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Comparison -->
+        <div class="technical-comparison">
+            <h2>🔍 So sánh kỹ thuật</h2>
+            <div class="comparison-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Khía cạnh</th>
+                            <th>Server-Sent Events (SSE)</th>
+                            <th>WebSocket</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Giao tiếp</td>
+                            <td>✅ Một chiều (Server → Client)</td>
+                            <td>✅ Hai chiều (Client ↔ Server)</td>
+                        </tr>
+                        <tr>
+                            <td>Giao thức</td>
+                            <td>HTTP (text/event-stream)</td>
+                            <td>WebSocket (ws://) qua TCP</td>
+                        </tr>
+                        <tr>
+                            <td>Kết nối lại</td>
+                            <td>✅ Tự động</td>
+                            <td>❌ Thủ công</td>
+                        </tr>
+                        <tr>
+                            <td>Độ trụ tải</td>
+                            <td>Thấp (chỉ có HTTP headers)</td>
+                            <td>Rất thấp (sau khi handshake)</td>
+                        </tr>
+                        <tr>
+                            <td>Trường hợp sử dụng</td>
+                            <td>Thông báo, Tin tức trực tiếp, Stream log</td>
+                            <td>Chat, Game, Cộng tác thời gian thực</td>
+                        </tr>
+                        <tr>
+                            <td>Hỗ trợ trình duyệt</td>
+                            <td>Tất cả trình duyệt hiện đại (trừ IE)</td>
+                            <td>Tất cả trình duyệt hiện đại</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
